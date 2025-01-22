@@ -1,42 +1,84 @@
-body {
-    background-color: #121212;
-    color: #ffffff;
-    font-family: 'Roboto', sans-serif;
-}
+const board = document.getElementById('board');
+const statusDisplay = document.getElementById('status');
+const restartButton = document.getElementById('restart');
+let gameActive = true;
+let currentPlayer = "X";
+let gameState = ["", "", "", "", "", "", "", "", ""];
 
-.container {
-    margin-top: 50px;
-}
+const winningConditions = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+];
 
-.board {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    max-width: 300px;
-    margin: 0 auto;
-}
+const handleCellPlayed = (clickedCell, clickedCellIndex) => {
+    gameState[clickedCellIndex] = currentPlayer;
+    clickedCell.innerHTML = currentPlayer;
+};
 
-.cell {
-    width: 100px;
-    height: 100px;
-    background-color: #1e1e1e;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2rem;
-    cursor: pointer;
-}
+const handlePlayerChange = () => {
+    currentPlayer = currentPlayer === "X" ? "O" : "X";
+    statusDisplay.innerHTML = `It's ${currentPlayer}'s turn`;
+};
 
-.cell:hover {
-    background-color: #333333;
-}
+const handleResultValidation = () => {
+    let roundWon = false;
+    for (let i = 0; i < winningConditions.length; i++) {
+        const winCondition = winningConditions[i];
+        let a = gameState[winCondition[0]];
+        let b = gameState[winCondition[1]];
+        let c = gameState[winCondition[2]];
+        if (a === '' || b === '' || c === '') {
+            continue;
+        }
+        if (a === b && b === c) {
+            roundWon = true;
+            break;
+        }
+    }
 
-.status {
-    text-align: center;
-    margin-top: 20px;
-}
+    if (roundWon) {
+        statusDisplay.innerHTML = `Player ${currentPlayer} has won!`;
+        gameActive = false;
+        return;
+    }
 
-.btn-restart {
-    display: block;
-    margin: 20px auto;
-}
+    let roundDraw = !gameState.includes("");
+    if (roundDraw) {
+        statusDisplay.innerHTML = `Game ended in a draw!`;
+        gameActive = false;
+        return;
+    }
+
+    handlePlayerChange();
+};
+
+const handleCellClick = (clickedCellEvent) => {
+    const clickedCell = clickedCellEvent.target;
+    const clickedCellIndex = parseInt(clickedCell.getAttribute('data-index'));
+
+    if (gameState[clickedCellIndex] !== "" || !gameActive) {
+        return;
+    }
+
+    handleCellPlayed(clickedCell, clickedCellIndex);
+    handleResultValidation();
+};
+
+const handleRestartGame = () => {
+    gameActive = true;
+    currentPlayer = "X";
+    gameState = ["", "", "", "", "", "", "", "", ""];
+    statusDisplay.innerHTML = `It's ${currentPlayer}'s turn`;
+    document.querySelectorAll('.cell').forEach(cell => cell.innerHTML = "");
+};
+
+document.querySelectorAll('.cell').forEach(cell => cell.addEventListener('click', handleCellClick));
+restartButton.addEventListener('click', handleRestartGame);
+
+statusDisplay.innerHTML = `It's ${currentPlayer}'s turn`;
