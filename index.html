@@ -1,33 +1,113 @@
-<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Futuristic Stopwatch</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet"/>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
-    <div class="text-center">
-        <h1 class="text-4xl mb-8">Futuristic Stopwatch</h1>
-        <div class="relative inline-block">
-            <div class="w-64 h-64 rounded-full border-8 border-gray-700 flex items-center justify-center">
-                <div class="text-5xl" id="display">00:00:00</div>
-            </div>
-            <img alt="Gradient half circle shape" class="absolute top-0 left-0 w-full h-full rounded-full opacity-50" height="256" src="https://storage.googleapis.com/a1aa/image/egdXMMoDiCxqLioLkMxxoMFygm2asYxEDDj0U6SwAIMmS1DKA.jpg" width="256"/>
-        </div>
-        <div class="mt-8 space-x-4">
-            <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full" id="startStopBtn">Start</button>
-            <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full" id="resetBtn">Reset</button>
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" id="lapBtn">Lap</button>
-        </div>
-        <div class="mt-8">
-            <h2 class="text-2xl mb-4">Lap Times</h2>
-            <ul class="list-none space-y-2" id="laps"></ul>
-        </div>
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Futuristic Stopwatch
+  </title>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&amp;display=swap" rel="stylesheet"/>
+  <style>
+   body {
+            font-family: 'Orbitron', sans-serif;
+        }
+  </style>
+ </head>
+ <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
+  <div class="text-center">
+   <h1 class="text-4xl mb-8">
+    Futuristic Stopwatch
+   </h1>
+   <div class="relative inline-block">
+    <div class="w-64 h-64 rounded-full border-8 border-gray-700 flex items-center justify-center">
+     <div class="text-5xl" id="display">
+      00:00:00
+     </div>
     </div>
-    <script src="script.js"></script>
-</body>
+    <img alt="Gradient half circle shape" class="absolute top-0 left-0 w-full h-full rounded-full opacity-50" height="256" src="https://storage.googleapis.com/a1aa/image/egdXMMoDiCxqLioLkMxxoMFygm2asYxEDDj0U6SwAIMmS1DKA.jpg" width="256"/>
+   </div>
+   <div class="mt-8 space-x-4">
+    <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full" id="startStopBtn">
+     Start
+    </button>
+    <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full" id="resetBtn">
+     Reset
+    </button>
+    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" id="lapBtn">
+     Lap
+    </button>
+   </div>
+   <div class="mt-8">
+    <h2 class="text-2xl mb-4">
+     Lap Times
+    </h2>
+    <ul class="list-none space-y-2" id="laps">
+    </ul>
+   </div>
+  </div>
+  <script>
+   let startTime, updatedTime, difference, tInterval, savedTime = 0, running = false;
+        const display = document.getElementById('display');
+        const startStopBtn = document.getElementById('startStopBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const lapBtn = document.getElementById('lapBtn');
+        const laps = document.getElementById('laps');
+
+        function startStop() {
+            if (!running) {
+                startTime = new Date().getTime() - savedTime;
+                tInterval = setInterval(getShowTime, 1000);
+                startStopBtn.innerHTML = "Pause";
+                startStopBtn.classList.remove('bg-green-500', 'hover:bg-green-700');
+                startStopBtn.classList.add('bg-yellow-500', 'hover:bg-yellow-700');
+                running = true;
+            } else {
+                clearInterval(tInterval);
+                savedTime = difference;
+                startStopBtn.innerHTML = "Start";
+                startStopBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-700');
+                startStopBtn.classList.add('bg-green-500', 'hover:bg-green-700');
+                running = false;
+            }
+        }
+
+        function reset() {
+            clearInterval(tInterval);
+            display.innerHTML = "00:00:00";
+            startStopBtn.innerHTML = "Start";
+            startStopBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-700');
+            startStopBtn.classList.add('bg-green-500', 'hover:bg-green-700');
+            running = false;
+            savedTime = 0;
+            laps.innerHTML = '';
+        }
+
+        function getShowTime() {
+            updatedTime = new Date().getTime();
+            difference = updatedTime - startTime;
+            let hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            let seconds = Math.floor((difference % (1000 * 60)) / 1000);
+            hours = (hours < 10) ? "0" + hours : hours;
+            minutes = (minutes < 10) ? "0" + minutes : minutes;
+            seconds = (seconds < 10) ? "0" + seconds : seconds;
+            display.innerHTML = hours + ":" + minutes + ":" + seconds;
+        }
+
+        function recordLap() {
+            if (running) {
+                const lapTime = display.innerHTML;
+                const lapItem = document.createElement('li');
+                lapItem.innerHTML = lapTime;
+                laps.appendChild(lapItem);
+            }
+        }
+
+        startStopBtn.addEventListener('click', startStop);
+        resetBtn.addEventListener('click', reset);
+        lapBtn.addEventListener('click', recordLap);
+  </script>
+ </body>
 </html>
