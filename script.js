@@ -1,58 +1,42 @@
-let startTime, updatedTime, difference, tInterval;
-let running = false;
-let lapCounter = 0;
-
-const display = document.getElementById('display');
-const startPauseButton = document.getElementById('startPause');
-const resetButton = document.getElementById('reset');
-const lapButton = document.getElementById('lap');
-const lapsList = document.getElementById('laps');
-
-function startPause() {
-    if (!running) {
-        startTime = new Date().getTime() - (difference || 0);
-        tInterval = setInterval(updateTime, 1000);
-        startPauseButton.textContent = 'Pause';
-        running = true;
-    } else {
-        clearInterval(tInterval);
-        startPauseButton.textContent = 'Start';
-        running = false;
-    }
+body {
+    background-color: #121212;
+    color: #ffffff;
+    font-family: 'Roboto', sans-serif;
 }
 
-function reset() {
-    clearInterval(tInterval);
-    running = false;
-    difference = 0;
-    display.textContent = '00:00:00';
-    startPauseButton.textContent = 'Start';
-    lapsList.innerHTML = '';
-    lapCounter = 0;
+.container {
+    margin-top: 50px;
 }
 
-function lap() {
-    if (running) {
-        lapCounter++;
-        const lapTime = document.createElement('li');
-        lapTime.textContent = `Lap ${lapCounter}: ${display.textContent}`;
-        lapsList.appendChild(lapTime);
-    }
+.board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    max-width: 300px;
+    margin: 0 auto;
 }
 
-function updateTime() {
-    updatedTime = new Date().getTime();
-    difference = updatedTime - startTime;
-    const hours = Math.floor(difference / (1000 * 60 * 60));
-    const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-    display.textContent = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+.cell {
+    width: 100px;
+    height: 100px;
+    background-color: #1e1e1e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    cursor: pointer;
 }
 
-function pad(number) {
-    return number < 10 ? '0' + number : number;
+.cell:hover {
+    background-color: #333333;
 }
 
-startPauseButton.addEventListener('click', startPause);
-resetButton.addEventListener('click', reset);
-lapButton.addEventListener('click', lap);
+.status {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.btn-restart {
+    display: block;
+    margin: 20px auto;
+}
